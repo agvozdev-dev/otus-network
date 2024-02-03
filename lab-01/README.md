@@ -269,7 +269,6 @@ VLAN Name                             Status    Ports
 VLAN - это виртуальная локальная сеть, прдназначенная для ограничения широковещательных рассылок и объединения узлов (элементов сети) в группы.
 
 #### 2.j. Изучите флеш-память. Какое имя присвоено образу Cisco IOS?
-Выполним команду:
 ```
 Switch# show flash
 ```
@@ -282,3 +281,37 @@ Directory of flash:/
 64016384 bytes total (59345929 bytes free)
 ```
 Имя образа - **2960-lanbasek9-mz.150-2.SE4.bin**
+
+## Часть 2. Настройка базовых параметров сетевых устройств
+### 1.a. Выполним следующие команды
+```
+Switch(config)# no ip domain-lookup
+Switch(config)# hostname S1
+S1(config)# service password-encryption
+S1(config)# enable secret class
+S1(config)# banner motd # Unauthorized access is strictly prohibited. #
+```
+
+### 1.b. Назначьте IP-адрес интерфейсу SVI на коммутаторе
+```
+S1(config-if)# interface vlan 1
+S1(config-if)# ip address 192.168.1.2 255.255.255.0
+S1(config-if)# no shutdown
+```
+
+### 1.c. Назначьте пароль на доступ через консольный порт
+```
+S1(config)# line console 0
+S1(config-line)# password cisco
+S1(config-line)# login
+```
+
+### 1.d. Настройте каналы виртуального соединения для удаленного управления (vty). Для чего нужна команда login?
+```
+S1(config)# line vty 0 4
+S1(config-line)# password cisco 
+S1(config-line)# login
+```
+Команда **login** нужна для того чтобы введенный нами пароль применился. Если эту команду не ввести, пароль запрашиваться не будет.
+
+
