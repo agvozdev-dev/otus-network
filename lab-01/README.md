@@ -338,4 +338,106 @@ S1(config-line)# login
 Команда **login** нужна для того чтобы введенный нами пароль применился. Если эту команду не ввести, пароль запрашиваться не будет.
 
 ### 2. Назначьте компьютеру IP-адрес и маску подсети в соответствии с таблицей адресации.
+![otus-netwotk-lab01-pc-ip-address](./assets/otus-netwotk-lab01-pc-ip-address.jpg)
 
+## Часть 3. Проверка сетевых подключений
+### 1.b. Проверьте параметры VLAN 1.
+```
+S1# show interface vlan 1
+```
+Output:
+```
+Vlan1 is up, line protocol is up
+  Hardware is CPU Interface, address is 0001.4257.63e8 (bia 0001.4257.63e8)
+  Internet address is 192.168.1.2/24
+  MTU 1500 bytes, BW 100000 Kbit, DLY 1000000 usec,
+     reliability 255/255, txload 1/255, rxload 1/255
+  Encapsulation ARPA, loopback not set
+  ARP type: ARPA, ARP Timeout 04:00:00
+  Last input 21:40:21, output never, output hang never
+  Last clearing of "show interface" counters never
+  Input queue: 0/75/0/0 (size/max/drops/flushes); Total output drops: 0
+  Queueing strategy: fifo
+  Output queue: 0/40 (size/max)
+  5 minute input rate 0 bits/sec, 0 packets/sec
+  5 minute output rate 0 bits/sec, 0 packets/sec
+     1682 packets input, 530955 bytes, 0 no buffer
+     Received 0 broadcasts (0 IP multicast)
+     0 runts, 0 giants, 0 throttles
+     0 input errors, 0 CRC, 0 frame, 0 overrun, 0 ignored
+     563859 packets output, 0 bytes, 0 underruns
+     0 output errors, 23 interface resets
+     0 output buffer failures, 0 output buffers swapped out
+```
+- Какова полоса пропускания этого интерфейса? - **BW 100000 Kbit**
+
+- В каком состоянии находится VLAN 1? - **Vlan1 is up**
+
+- В каком состоянии находится канальный протокол? - **line protocol is up**
+
+### 2.a. В командной строке компьютера PC-A с помощью утилиты ping проверьте связь сначала с адресом PC-A.
+```
+C:\>ping 192.168.1.10 
+
+Pinging 192.168.1.10 with 32 bytes of data:
+
+Reply from 192.168.1.10: bytes=32 time=10ms TTL=128
+Reply from 192.168.1.10: bytes=32 time=6ms TTL=128
+Reply from 192.168.1.10: bytes=32 time<1ms TTL=128
+Reply from 192.168.1.10: bytes=32 time=6ms TTL=128
+
+Ping statistics for 192.168.1.10:
+    Packets: Sent = 4, Received = 4, Lost = 0 (0% loss),
+Approximate round trip times in milli-seconds:
+    Minimum = 0ms, Maximum = 10ms, Average = 5ms
+```
+### 2.b. Из командной строки компьютера PC-A отправьте эхо-запрос на административный адрес интерфейса SVI коммутатора S1
+- Первая попытка (с потерей пакетов)
+  
+  ```
+  C:\>ping 192.168.1.2
+
+  Pinging 192.168.1.2 with 32 bytes of data:
+  
+  Request timed out.
+  Reply from 192.168.1.2: bytes=32 time<1ms TTL=255
+  Reply from 192.168.1.2: bytes=32 time<1ms TTL=255
+  Reply from 192.168.1.2: bytes=32 time<1ms TTL=255
+  
+  Ping statistics for 192.168.1.2:
+      Packets: Sent = 4, Received = 3, Lost = 1 (25% loss),
+  Approximate round trip times in milli-seconds:
+      Minimum = 0ms, Maximum = 0ms, Average = 0ms
+  ```
+
+- Вторая попытка (без потерь)
+
+  ```
+  C:\>ping 192.168.1.2
+
+  Pinging 192.168.1.2 with 32 bytes of data:
+  
+  Reply from 192.168.1.2: bytes=32 time=22ms TTL=255
+  Reply from 192.168.1.2: bytes=32 time<1ms TTL=255
+  Reply from 192.168.1.2: bytes=32 time<1ms TTL=255
+  Reply from 192.168.1.2: bytes=32 time<1ms TTL=255
+  
+  Ping statistics for 192.168.1.2:
+      Packets: Sent = 4, Received = 4, Lost = 0 (0% loss),
+  Approximate round trip times in milli-seconds:
+      Minimum = 0ms, Maximum = 22ms, Average = 5ms
+  ```
+### 3. Проверьте удаленное управление коммутатором S1.
+```
+Trying 192.168.1.2 ...Open Unauthorized access is strictly prohibited. 
+
+User Access Verification
+
+Password: 
+S1>enable
+Password: 
+S1#copy running-config startup-config
+Destination filename [startup-config]? 
+Building configuration...
+[OK]
+```
